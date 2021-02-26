@@ -1,0 +1,24 @@
+{
+  // Require .prettierrc
+  "prettier.requireConfig": true,
+  "suggest.echodocSupport": true,
+  "suggest.maxCompleteItemCount": 20,
+
+  // Run prettier (and others)
+  "coc.preferences.formatOnSaveFiletypes": [
+	"html",
+	"css",
+	"graphql",
+	"javascript",
+	"javascriptreact",
+	"json",
+	"markdown",
+	"typescript",
+	"typescript.tsx",
+	"typescriptreact"
+],
+  "eslint.filetypes": ["javascript", "typescript", "typescriptreact", "javascriptreact", "typescript.tsx"],
+  "diagnostic.errorSign": "•",
+  "diagnostic.warningSign": "•",
+  "diagnostic.infoSign": "•"
+}
