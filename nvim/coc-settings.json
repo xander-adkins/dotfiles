@@ -1,24 +1,49 @@
 {
-  // Require .prettierrc
-  "prettier.requireConfig": true,
-  "suggest.echodocSupport": true,
-  "suggest.maxCompleteItemCount": 20,
+	// Require .prettierrc
+	"prettier.requireConfig": true,
+	"suggest.echodocSupport": true,
+	"suggest.maxCompleteItemCount": 20,
 
-  // Run prettier (and others)
-  "coc.preferences.formatOnSaveFiletypes": [
-	"html",
-	"css",
-	"graphql",
-	"javascript",
-	"javascriptreact",
-	"json",
-	"markdown",
-	"typescript",
-	"typescript.tsx",
-	"typescriptreact"
-],
-  "eslint.filetypes": ["javascript", "typescript", "typescriptreact", "javascriptreact", "typescript.tsx"],
-  "diagnostic.errorSign": "•",
-  "diagnostic.warningSign": "•",
-  "diagnostic.infoSign": "•"
+	// Run prettier (and others)
+	"coc.preferences.formatOnSaveFiletypes": [
+		"html",
+		"css",
+		"graphql",
+		"javascript",
+		"javascriptreact",
+		"json",
+		"markdown",
+		"typescript",
+		"typescript.tsx",
+		"typescriptreact"
+	],
+	"eslint.filetypes": [
+		"javascript", 
+		"javascriptreact", 
+		"typescript", 
+		"typescriptreact"
+	],
+	"diagnostic.errorSign": "•",
+	"diagnostic.warningSign": "•",
+	"diagnostic.infoSign": "•",
+	"languageserver": {
+		"haskell": {
+			"command": "haskell-language-server-wrapper",
+			"args": [
+				"--lsp"
+			],
+			"rootPatterns": [
+				"*.cabal", 
+				"stack.yaml", 
+				"cabal.project", 
+				"package.yaml", 
+				"hie.yaml"
+			],
+			"filetypes": [
+				"haskell", 
+				"lhaskell"
+			]
+		}
+	}
 }
+

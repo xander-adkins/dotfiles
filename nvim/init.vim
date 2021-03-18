@@ -29,11 +29,20 @@ set directory=~/.nvim/swaps
 set undodir=~/.nvim/undo " set undotree file directory
 set undofile " set undotree to save to file
 
+" Remember info about open buffers on close
+set viminfo^=%
+
 " Use the OS clipboard by default (on versions compiled with `+clipboard`)
 set clipboard=unnamed
 
 " Don’t show the intro message when starting Vim
 set shortmess=atI
+
+" Don't redraw while executing macros (good performance config)
+set lazyredraw
+
+" For regular expressions turn magic on
+set magic
 
 
 " ----------------------------------------------------------------------------
@@ -50,24 +59,27 @@ call plug#begin(stdpath('data') . './plugged')
 " Declare the list of plugins.
 
 " System
-Plug 'scrooloose/nerdtree'  "A tree explorer plugin
 Plug 'christoomey/vim-tmux-navigator' "Seamless navigation between tmux panes and vim splits
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } "A command-line fuzzy finder
 Plug 'junegunn/fzf.vim' "fzf for vim
+Plug 'scrooloose/nerdtree'  "A tree explorer plugin
 
 " Syntax & Highlighting
-Plug 'sheerun/vim-polyglot' "A solid language pack for Vim.
 Plug 'neoclide/coc.nvim', {'branch': 'release'} "Load extensions like VSCode and host language servers.
+Plug 'sheerun/vim-polyglot' "A solid language pack for Vim.
 
 " Linting & Formatting
 
 " Utilities
 Plug 'airblade/vim-gitgutter' "A Vim plugin which shows a git diff in the gutter
-Plug 'mbbill/undotree' "The undo history visualizer for VIM
 Plug 'jiangmiao/auto-pairs' "Vim plugin, insert or delete brackets, parens, quotes in pair
+Plug 'junegunn/goyo.vim' "Distraction-free writing in Vim.
+Plug 'mbbill/undotree' "The undo history visualizer for VIM
 Plug 'tpope/vim-commentary' "Comment stuff out
-Plug 'tpope/vim-surround' "Quoting/parenthesizing made simple
 Plug 'tpope/vim-repeat' "Enable repeating supported plugin maps with '.'
+Plug 'tpope/vim-surround' "Quoting/parenthesizing made simple
+" Plug 'godlygeek/tabular' "Vim script for text filtering and alignment
+" Plug 'plasticboy/vim-markdown' "Markdown Vim Mode
 
 " Theming
 Plug 'flazz/vim-colorschemes' "One colour scheme pack to rule them all!
@@ -76,7 +88,7 @@ Plug 'vim-airline/vim-airline-themes' "A collection of themes for vim-airline
 
 " List ends here. Plugins become visible to Vim after this call.
 call plug#end()
- 
+
 
 " ----------------------------------------------------------------------------
 " Formatting
@@ -203,6 +215,7 @@ function! TwiddleCase(str)
 	endif
 	return result
 endfunction
+
 vnoremap <leader>cc y:call setreg('', TwiddleCase(@"), getregtype(''))<CR>gv""Pgv
 
 " Don't re-write register during copy paste
@@ -238,6 +251,60 @@ autocmd FileType apache setlocal commentstring=#\ %s
 " Close vim if the only window left open is a NERDTree
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
+" Return to last edit position when opening files
+augroup last_edit
+  autocmd!
+  autocmd BufReadPost *
+       \ if line("'\"") > 0 && line("'\"") <= line("$") |
+       \   exe "normal! g`\"" |
+       \ endif
+augroup END
+
+" Source the vimrc file after saving it
+augroup sourcing
+  autocmd!
+  if has('nvim')
+    autocmd bufwritepost init.vim source $MYVIMRC
+  else
+    autocmd bufwritepost .vimrc source $MYVIMRC
+  endif
+augroup END
+
+" Treat all .md files as markdown
+autocmd BufNewFile,BufRead *.md set filetype=markdown
+
+" Automatically opens Goyo for all markdown files
+function! s:auto_goyo()
+  if &ft == 'markdown'
+    Goyo 80
+  elseif exists('#goyo')
+    let bufnr = bufnr('%')
+    Goyo!
+    execute 'b '.bufnr
+  endif
+endfunction
+
+augroup goyo_markdown
+  autocmd!
+  autocmd BufNewFile,BufRead * call s:auto_goyo()
+augroup END
+
+" Set spell check to the Queen's English
+" autocmd FileType markdown setlocal spell spelllang=en_gb
+
+" Hide plaintext formatting
+autocmd FileType markdown set conceallevel=2
+
+" Set linebreak for markdown files
+autocmd FileType markdown set linebreak
+
+" Disable cursor line and column highlight
+autocmd FileType markdown set nocursorline
+autocmd FileType markdown set nocursorcolumn
+
+" Insert timestamp at the end of the line in this format: 20200527T113245
+nnoremap <leader>ts m'A<C-R>=strftime('%Y%m%dT%H%M%S')<CR>
+
 
 " ----------------------------------------------------------------------------
 " Plugin settings
@@ -269,8 +336,9 @@ nnoremap <leader>u :UndotreeShow<CR>
 " vim-airline/vim-airline-themes
 let g:airline_theme='minimalist'
 
+
 " ----------------------------------------------------------------------------
-" CoC Vim Configuration 
+" CoC Vim Configuration
 " ----------------------------------------------------------------------------
 " Declare CoC extensions
 let g:coc_global_extensions = [
