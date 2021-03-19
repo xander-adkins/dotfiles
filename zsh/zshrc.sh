@@ -1,4 +1,12 @@
 ###########################################################
+# => General Settings 
+###########################################################
+
+	# Load Tmux on start 
+	ZSH_TMUX_AUTOSTART=true
+
+
+###########################################################
 # => Export Environment Variables
 ###########################################################
 
@@ -16,6 +24,19 @@
 	export HISTFILE=$HOME/.zsh_history		# History filepath
 	export HISTSIZE=10000					# Maximum events for internal history
 	export SAVEHIST=10000					# Maximum events in history file
+
+
+###########################################################
+# => Set Options 
+###########################################################
+
+	# Auto CD
+	setopt autocd				# Change directory without explicit "cd" command
+
+	# Directory Stack
+	setopt AUTO_PUSHD           # Push the current directory visited on the stack.
+	setopt PUSHD_IGNORE_DUPS    # Do not store duplicates in the stack.
+	setopt PUSHD_SILENT         # Do not print the directory stack after pushd or popd.
 
 
 ###########################################################
@@ -50,6 +71,25 @@
 	alias ...="cd ../.."
 	alias ....="cd ../../.."
 
+	# Git
+	alias gs='git status'
+	alias ga='git add'
+	alias gp='git push'
+	alias gpo='git push origin'
+	alias gtd='git tag --delete'
+	alias gtdr='git tag --delete origin'
+	alias gr='git branch -r'
+	alias gplo='git pull origin'
+	alias gb='git branch '
+	alias gc='git commit'
+	alias gd='git diff'
+	alias gco='git checkout '
+	alias gl='git log'
+	alias gr='git remote'
+	alias grs='git remote show'
+	alias glo='git log --pretty="oneline"'
+	alias glol='git log --graph --oneline --decorate'
+
 	# IP address
 	alias ip="ipconfig getifaddr en0"
 
@@ -64,13 +104,15 @@
 	alias vimrc="$EDITOR ~/.dotfiles/nvim/init.vim"
 	alias tmux.conf="$EDITOR ~/.dotfiles/tmux/tmux.conf"
 
+	# Display the stack directories with a prefix number
+	alias d='dirs -v'
+	for index ({1..9}) alias "$index"="cd +${index}" 
+	unset index
+
 
 ###########################################################
-# => Autoload 
+# => NVM Autoload & Source Config 
 ###########################################################
-
-	# Start Tmux automatically on terminal start
-	[[ $TERM != "screen" ]] && exec tmux
 
 	# Start NVM automatically on terminal start
 	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -95,30 +137,64 @@
 	add-zsh-hook chpwd load-nvmrc
 	load-nvmrc
 
-	# Zsh Completion System
+
+###########################################################
+# => Changing Cursor
+###########################################################
+
+	# Visual indicator to show the current mode (NORMAL or INSERT)	
+	cursor_mode() {
+		cursor_block='\e[2 q'
+		cursor_beam='\e[6 q'
+		function zle-keymap-select {
+			if [[ ${KEYMAP} == vicmd ]] ||
+				[[ $1 = 'block' ]]; then
+				echo -ne $cursor_block
+			elif [[ ${KEYMAP} == main ]] ||
+				[[ ${KEYMAP} == viins ]] ||
+				[[ ${KEYMAP} = '' ]] ||
+				[[ $1 = 'beam' ]]; then
+				echo -ne $cursor_beam
+			fi
+		}
+		zle-line-init() { echo -ne $cursor_beam }
+		zle -N zle-keymap-select
+		zle -N zle-line-init
+	}
+	# Initialize Cursor Mode
+	cursor_mode
+
+
+###########################################################
+# => Zsh Completion System 
+###########################################################
+
+	# Designate compinstall file
 	zstyle :compinstall filename '$HOME/.zshrc'
-	# case insensitive path-completion
-	zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*'
-	# partial completion suggestions
+	# Case insensitive path-completion
+	zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+	# Partial completion suggestions
 	zstyle ':completion:*' list-suffixes
 	zstyle ':completion:*' expand prefix suffix
-	# Initialize Completion
+	# Initialize completion
 	autoload -Uz compinit && compinit
-	
+	_comp_options+=(globdots) # With hidden files
+
 ###########################################################
 # => Sourcing & Plugins 
 ###########################################################
 
-	source /usr/local/share/chruby/chruby.sh					# Chruby configuration requirement
-	source /usr/local/share/chruby/auto.sh						# 
-	source $HOME/.dotfiles/zsh/plugins/nvm/nvm.plugin.zsh		# Adds autocompletions for nvm â€” a Node.js version manager
-	source $HOME/.dotfiles/zsh/plugins/tmux/tmux.plugin.zsh		# Provides aliases for tmux, the terminal multiplexer
-	source $HOME/.dotfiles/zsh/plugins/brew/brew.plugin.zsh		# Adds several aliases for common brew commands
-	source $HOME/.dotfiles/zsh/plugins/cabal/cabal.plugin.zsh	# Provides completion for Cabal, a build tool for Haskell
-	source $HOME/.dotfiles/zsh/plugins/fzf/fzf.plugin.zsh		# Enables fzf's fuzzy auto-completion and key bindings
-	source $HOME/.dotfiles/zsh/plugins/osx/osx.plugin.zsh		# Provides a few utilities for macOS
-	source $HOME/.dotfiles/zsh/plugins/stack/stack.plugin.zsh	# Provides completion for Stack a tool for Haskell
-	source $HOME/.dotfiles/zsh/plugins/yarn/yarn.plugin.zsh		# Adds completion and aliases for the Yarn package manager
+	source /usr/local/share/chruby/chruby.sh							# Chruby configuration requirement
+	source /usr/local/share/chruby/auto.sh								# 
+	source $HOME/.dotfiles/zsh/plugins/brew/brew.plugin.zsh				# Adds several aliases for common brew commands
+	source $HOME/.dotfiles/zsh/plugins/cabal/cabal.plugin.zsh			# Provides completion for Cabal, a build tool for Haskell
+	source $HOME/.dotfiles/zsh/plugins/fzf/fzf.plugin.zsh				# Enables fzf's fuzzy auto-completion and key bindings
+	source $HOME/.dotfiles/zsh/plugins/gitignore/gitignore.plugin.zsh	# Enables the use of gitignore.io from the command line
+	source $HOME/.dotfiles/zsh/plugins/nvm/nvm.plugin.zsh				# Adds autocompletions for nvm â€” a Node.js version manager
+	source $HOME/.dotfiles/zsh/plugins/osx/osx.plugin.zsh				# Provides a few utilities for macOS
+	source $HOME/.dotfiles/zsh/plugins/stack/stack.plugin.zsh			# Provides completion for Stack a tool for Haskell
+	source $HOME/.dotfiles/zsh/plugins/tmux/tmux.plugin.zsh				# Provides aliases for tmux, the terminal multiplexer
+	source $HOME/.dotfiles/zsh/plugins/yarn/yarn.plugin.zsh				# Adds completion and aliases for the Yarn package manager
 	 
 	# Path to ghcup & ghcup-env
 	[ -f "/Users/alexander/.ghcup/env" ] && source "/Users/alexander/.ghcup/env" 
@@ -130,6 +206,8 @@
 ###########################################################
 
 # Minimal Theme Prompt
-PROMPT='%m :: %2~ %BÈ%b '
+fpath=($HOME/.dotfiles/zsh/plugins/prompt $fpath)
+autoload -Uz prompt_setup; prompt_setup
+# PROMPT='%m :: %2~ %BÈ%b '
 
 
