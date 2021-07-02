@@ -8,11 +8,11 @@
 " System
 " ----------------------------------------------------------------------------
 
-" Be iMproved, required
-set nocompatible
-
 " Required
 filetype off
+
+" Be iMproved, required
+set nocompatible
 
 " Backspace control
 set backspace=2
@@ -56,35 +56,35 @@ set magic
 " Plugins will be downloaded under the specified directory.
 call plug#begin(stdpath('data') . './plugged')
 
-" Declare the list of plugins.
+	" Declare the list of plugins.
 
-" System
-Plug 'christoomey/vim-tmux-navigator' "Seamless navigation between tmux panes and vim splits
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } "A command-line fuzzy finder
-Plug 'junegunn/fzf.vim' "fzf for vim
-Plug 'scrooloose/nerdtree'  "A tree explorer plugin
+	" System
+	Plug 'christoomey/vim-tmux-navigator' "Seamless navigation between tmux panes and vim splits
+	Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } "A command-line fuzzy finder
+	Plug 'junegunn/fzf.vim' "fzf for vim
+	Plug 'scrooloose/nerdtree'  "A tree explorer plugin
 
-" Syntax & Highlighting
-Plug 'neoclide/coc.nvim', {'branch': 'release'} "Load extensions like VSCode and host language servers.
-Plug 'sheerun/vim-polyglot' "A solid language pack for Vim.
+	" Syntax & Highlighting
+	Plug 'neoclide/coc.nvim', {'branch': 'release'} "Load extensions like VSCode and host language servers.
+	Plug 'sheerun/vim-polyglot' "A solid language pack for Vim.
 
-" Linting & Formatting
+	" Linting & Formatting
 
-" Utilities
-Plug 'airblade/vim-gitgutter' "A Vim plugin which shows a git diff in the gutter
-Plug 'jiangmiao/auto-pairs' "Vim plugin, insert or delete brackets, parens, quotes in pair
-Plug 'junegunn/goyo.vim' "Distraction-free writing in Vim.
-Plug 'mbbill/undotree' "The undo history visualizer for VIM
-Plug 'tpope/vim-commentary' "Comment stuff out
-Plug 'tpope/vim-repeat' "Enable repeating supported plugin maps with '.'
-Plug 'tpope/vim-surround' "Quoting/parenthesizing made simple
-" Plug 'godlygeek/tabular' "Vim script for text filtering and alignment
-" Plug 'plasticboy/vim-markdown' "Markdown Vim Mode
+	" Utilities
+	Plug 'airblade/vim-gitgutter' "A Vim plugin which shows a git diff in the gutter
+	Plug 'jiangmiao/auto-pairs' "Vim plugin, insert or delete brackets, parens, quotes in pair
+	Plug 'junegunn/goyo.vim' "Distraction-free writing in Vim.
+	Plug 'mbbill/undotree' "The undo history visualizer for VIM
+	Plug 'tpope/vim-commentary' "Comment stuff out
+	Plug 'tpope/vim-repeat' "Enable repeating supported plugin maps with '.'
+	Plug 'tpope/vim-surround' "Quoting/parenthesizing made simple
+	" Plug 'godlygeek/tabular' "Vim script for text filtering and alignment
+	" Plug 'plasticboy/vim-markdown' "Markdown Vim Mode
 
-" Theming
-Plug 'flazz/vim-colorschemes' "One colour scheme pack to rule them all!
-Plug 'vim-airline/vim-airline' "Lean & mean status/tabline
-Plug 'vim-airline/vim-airline-themes' "A collection of themes for vim-airline
+	" Theming
+	Plug 'flazz/vim-colorschemes' "One colour scheme pack to rule them all!
+	Plug 'vim-airline/vim-airline' "Lean & mean status/tabline
+	Plug 'vim-airline/vim-airline-themes' "A collection of themes for vim-airline
 
 " List ends here. Plugins become visible to Vim after this call.
 call plug#end()
@@ -131,6 +131,48 @@ set norelativenumber
 
 " Allow for five characters in margin
 set numberwidth=5
+
+
+" ----------------------------------------------------------------------------
+" Functions
+" ----------------------------------------------------------------------------
+
+" Visually select text then press ~ to convert the text to UPPER CASE, then to lower case, then to Title Case
+function! TwiddleCase(str)
+	if a:str ==# toupper(a:str)
+		let result = tolower(a:str)
+	elseif a:str ==# tolower(a:str)
+		let result = substitute(a:str,'\(\<\w\+\>\)', '\u\1', 'g')
+	else
+		let result = toupper(a:str)
+	endif
+	return result
+endfunction
+
+" Automatically opens Goyo for all markdown files
+function! s:auto_goyo()
+  if &ft == 'markdown'
+    Goyo 80
+  elseif exists('#goyo')
+    let bufnr = bufnr('%')
+    Goyo!
+    execute 'b '.bufnr
+  endif
+endfunction
+
+" Markdown mapping for check-boxes
+function Check()
+    let l:line=getline('.')
+    let l:curs=winsaveview()
+    if l:line=~?'\s*-\s*\[\s*\].*'
+        s/\[\s*\]/[.]/
+    elseif l:line=~?'\s*-\s*\[\.\].*'
+        s/\[.\]/[x]/
+    elseif l:line=~?'\s*-\s*\[x\].*'
+        s/\[x\]/[ ]/
+    endif
+    call winrestview(l:curs)
+endfunction
 
 
 " ----------------------------------------------------------------------------
@@ -204,20 +246,6 @@ nnoremap <leader>fr :%s/\<<C-r><C-w>\>//g<Left><Left>
 " Remove search highlight with esc key
 nnoremap <esc> :noh<return><esc>
 
-" Visually select text then press ~ to convert the text to UPPER CASE, then to lower case, then to Title Case
-function! TwiddleCase(str)
-	if a:str ==# toupper(a:str)
-		let result = tolower(a:str)
-	elseif a:str ==# tolower(a:str)
-		let result = substitute(a:str,'\(\<\w\+\>\)', '\u\1', 'g')
-	else
-		let result = toupper(a:str)
-	endif
-	return result
-endfunction
-
-vnoremap <leader>cc y:call setreg('', TwiddleCase(@"), getregtype(''))<CR>gv""Pgv
-
 " Don't re-write register during copy paste
 xnoremap p pgvy
 
@@ -234,11 +262,23 @@ nnoremap <Leader>s :setlocal spell! spelllang=en_gb<CR>
 " Launch Spell Check Correction Options Dialogue
 nnoremap ? z=
 
-" I typo this enough to be worthwhile aliasing it
-command! W :write
+" Shortcut to open NERDTree
+noremap <leader>n :NERDTreeToggle<CR>
+
+" Map show undo tree
+nnoremap <leader>u :UndotreeShow<CR>
 
 " Rerender the Vim window to fix glitched characters
 nnoremap <leader>0 :redraw!<CR>
+
+" Visually select text then press ~ to convert the text to UPPER CASE, then to lower case, then to Title Case
+vnoremap <leader>cc y:call setreg('', TwiddleCase(@"), getregtype(''))<CR>gv""Pgv
+
+" Insert timestamp at the end of the line in this format: 20200527T113245
+nnoremap <leader>ts m'A<C-R>=strftime('%Y%m%dT%H%M%S')<CR>
+
+" I typo this enough to be worthwhile aliasing it
+command! W :write
 
 
 " ----------------------------------------------------------------------------
@@ -255,9 +295,9 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 augroup last_edit
   autocmd!
   autocmd BufReadPost *
-       \ if line("'\"") > 0 && line("'\"") <= line("$") |
-       \   exe "normal! g`\"" |
-       \ endif
+    \ if line("'\"") > 0 && line("'\"") <= line("$") |
+    \   exe "normal! g`\"" |
+    \ endif
 augroup END
 
 " Source the vimrc file after saving it
@@ -274,20 +314,13 @@ augroup END
 autocmd BufNewFile,BufRead *.md set filetype=markdown
 
 " Automatically opens Goyo for all markdown files
-function! s:auto_goyo()
-  if &ft == 'markdown'
-    Goyo 80
-  elseif exists('#goyo')
-    let bufnr = bufnr('%')
-    Goyo!
-    execute 'b '.bufnr
-  endif
-endfunction
-
 augroup goyo_markdown
   autocmd!
   autocmd BufNewFile,BufRead * call s:auto_goyo()
 augroup END
+
+" Markdown mapping for check-boxes
+autocmd FileType markdown nnoremap <silent> - :call Check()<CR>
 
 " Set spell check to the Queen's English
 " autocmd FileType markdown setlocal spell spelllang=en_gb
@@ -302,17 +335,12 @@ autocmd FileType markdown set linebreak
 autocmd FileType markdown set nocursorline
 autocmd FileType markdown set nocursorcolumn
 
-" Insert timestamp at the end of the line in this format: 20200527T113245
-nnoremap <leader>ts m'A<C-R>=strftime('%Y%m%dT%H%M%S')<CR>
-
 
 " ----------------------------------------------------------------------------
 " Plugin settings
 " ----------------------------------------------------------------------------
 
 " scrooloose/nerdtree
-" Shortcut to open NERDTree
-noremap <leader>n :NERDTreeToggle<CR>
 " Open/Close selected node with 'l' & 'h' or default '<enter>'
 let NERDTreeMapActivateNode = 'l'
 " Automatically close NERDTree after openning file
@@ -329,9 +357,6 @@ let g:NERDTreeWinSize = 30
 let NERDTreeAutoDeleteBuffer = 1
 " Collapses on the same line directories that have only one child directory
 let NERDTreeCascadeSingleChildDir = 0
-
-" Map show undo tree
-nnoremap <leader>u :UndotreeShow<CR>
 
 " vim-airline/vim-airline-themes
 let g:airline_theme='minimalist'
@@ -410,8 +435,8 @@ augroup end
 xmap <leader>a  <Plug>(coc-codeaction-selected)
 nmap <leader>a  <Plug>(coc-codeaction-selected)
 
-" Remap keys for applying codeAction to the current buffer.
-nmap <leader>ac  <Plug>(coc-codeaction)
+" remap keys for applying codeaction to the current buffer.
+nmap <leader>ac  <plug>(coc-codeaction)
 " Apply AutoFix to problem on the current line.
 nmap <leader>qf  <Plug>(coc-fix-current)
 

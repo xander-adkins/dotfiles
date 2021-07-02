@@ -1,0 +1,14 @@
+shell ~/.config/cmus/cmus-osx/rc_entry.sh &
+
+# Show current track in window 
+set auto_expand_albums_follow=true
+# Allow granular control of volume
+set softvol=true
+# Default playback mode to 'all' 
+set aaa_mode=all
+# Set Track Window [2-digit tracknumber, title, start align-right, year, duration, playcount]
+set format_trackwin= %02n. %t %= %y %d %X
+# Set Playlist Window [left align, artist, album, track number, right-align, year, duration]
+set format_playlist= %-25%a %-15%l %02n. %t%= %y %d
+# Set Current Track [artist, album, 2-digit tracknumber, title, right-align, bitrate, genre, year]
+set format_current= %a - %l - %02n. %t%= %{bitrate}Kbps %g %y

@@ -1,0 +1,53 @@
+###########################################################
+# => SC-IM CONFIGURATION 
+###########################################################
+
+###########################################################
+# => General Settings 
+###########################################################
+# Move the cursor to a new line after an entry
+set newline_action=j
+# Display current filename in status-line
+set filename_with_mode=1
+# Allow cell content to overflow into the next column
+set overlap=0
+# Place the input bar at the bottom of the screen
+set input_bar_bottom=1
+# Set content to be cut off at the end of the cell
+set truncate=1
+# Ignore case in searches done with '/' command
+set ignorecase=1
+# Auto-backup sc-im every n seconds
+set autobackup=15
+
+###########################################################
+# => Mappings 
+###########################################################
+# Exit Insert mode and enter Normal mode
+imap "jk" "<ESC>"
+cmap "jk" "<ESC>"
+
+###########################################################
+# => Theme Colours 
+###########################################################
+color "type=HEADINGS fg=DEFAULT_COLOR bg=DEFAULT_COLOR"
+color "type=HEADINGS_ODD fg=DEFAULT_COLOR bg=DEFAULT_COLOR"
+color "type=MODE fg=DEFAULT_COLOR bg=DEFAULT_COLOR"
+color "type=NUMB fg=DEFAULT_COLOR bg=DEFAULT_COLOR"
+color "type=STRG fg=DEFAULT_COLOR bg=DEFAULT_COLOR"
+color "type=DATEF fg=DEFAULT_COLOR bg=DEFAULT_COLOR"
+color "type=CELL_SELECTION bold=1 fg=DEFAULT_COLOR bg=WHITE"
+color "type=CELL_SELECTION_SC bold=1 fg=DEFAULT_COLOR bg=WHITE"
+color "type=GRID_EVEN fg=DEFAULT_COLOR bg=DEFAULT_COLOR"
+color "type=GRID_ODD fg=DEFAULT_COLOR bg=DEFAULT_COLOR"
+color "type=EXPRESSION fg=DEFAULT_COLOR bg=DEFAULT_COLOR"
+color "type=CELL_ERROR fg=DEFAULT_COLOR bg=DEFAULT_COLOR"
+color "type=CELL_NEGATIVE fg=YELLOW bg=DEFAULT_COLOR"
+color "type=INFO_MSG fg=YELLOW bg=DEFAULT_COLOR"
+color "type=ERROR_MSG fg=RED bg=DEFAULT_COLOR"
+color "type=CELL_ID fg=DEFAULT_COLOR bg=DEFAULT_COLOR"
+color "type=CELL_FORMAT fg=DEFAULT_COLOR bg=DEFAULT_COLOR"
+color "type=CELL_CONTENT fg=DEFAULT_COLOR bg=DEFAULT_COLOR"
+color "type=WELCOME fg=DEFAULT_COLOR bg=DEFAULT_COLOR"
+color "type=NORMAL fg=DEFAULT_COLOR bg=DEFAULT_COLOR"
+color "type=INPUT fg=DEFAULT_COLOR bg=DEFAULT_COLOR"

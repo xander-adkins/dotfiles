@@ -19,6 +19,7 @@
 	
 	# NVM
 	export NVM_DIR=$HOME/.nvm
+	export NVM_COLORS='bcmye'
 
 	# History
 	export HISTFILE=$HOME/.zsh_history		# History filepath
@@ -60,6 +61,7 @@
 	# CD 
 	alias home="cd ~"
 	alias root="cd /"
+	alias notes="cd ~/Dropbox/Notes && ./notes.sh"
 	alias g="cd ~/Programming/Github"
 	alias db="cd ~/Dropbox"
 	alias dl="cd ~/Downloads"
@@ -103,11 +105,38 @@
 	alias zshrc="$EDITOR ~/.dotfiles/zsh/zshrc.sh"
 	alias vimrc="$EDITOR ~/.dotfiles/nvim/init.vim"
 	alias tmux.conf="$EDITOR ~/.dotfiles/tmux/tmux.conf"
+	alias scimrc="$EDITOR ~/.dotfiles/sc-im/scimrc"
 
 	# Display the stack directories with a prefix number
 	alias d='dirs -v'
 	for index ({1..9}) alias "$index"="cd +${index}" 
 	unset index
+
+	# Recursively remove .DS_Store files
+	alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"
+
+	# Show/hide hidden files in Finder
+	alias show="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
+	alias hide="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
+
+	# Hide/show all desktop icons (useful when presenting)
+	alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
+	alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+
+	# Eject all hardrives
+	alias ejectall='osascript -e "tell application \"Finder\" to eject (every disk whose ejectable is true)"'
+
+	# Reboot the computer 
+	alias reboot='osascript -e "tell app \"System Events\" to restart"'
+
+	# Autoset Correct Macbook Volume when Cmus starts 
+	alias cmus='osascript -e "set volume output volume 70" && cmus'
+
+	# Update cmus library
+	alias cmusupdate='echo "Updating cmus..." && cmus-remote -C "view tree" && cmus-remote -C clear && cmus-remote -C "add /Volumes/Music_Library/Music" && cmus-remote -C "update-cache -f" && echo "Done."'
+	
+	# Mount Music_Library from piCorePlayer
+	alias musicmount='bash ~/.dotfiles/utils/mnt_music.sh'
 
 
 ###########################################################
