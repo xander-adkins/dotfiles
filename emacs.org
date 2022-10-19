@@ -107,30 +107,51 @@ Make use of [[https://github.com/jwiegley/use-package][use-package]] to automate
 
 #+END_SRC
 
-* IDE Type Configurations 
+* Formatting & Syntax Highlighting Configurations 
 
 #+BEGIN_SRC emacs-lisp
 
-    (use-package tree-sitter                                                      ; Tree-sitter syntax highlighting 
+  (use-package glsl-mode)                                                       ; Glsl language support
+
+  (use-package lsp-mode                                                         ; Language Server Protocol Support for Emacs 
+    :init
+      (setq lsp-keymap-prefix "C-c l")                                          ; Set prefix for lsp-command-keymap
+    :hook (typescript-mode . lsp)
+    :commands lsp)
+
+  (use-package markdown-mode                                                    ; Markdown language support
+    :hook (markdown-mode . auto-fill-mode))                                     ; Automatically break lines of buffer content
+
+  (use-package tree-sitter                                                      ; Tree-sitter syntax highlighting 
+  :config
+    (require 'tree-sitter-langs)
+    (global-tree-sitter-mode)
+    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+  (use-package typescript-mode                                                  ; Typescript language support
+    :mode ("\\.tsx?\\'" . typescript-mode)
     :config
-      (require 'tree-sitter-langs)
-      (global-tree-sitter-mode)
-      (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+    (setq typescript-indent-level 2))
 
+#+END_SRC
 
-    (use-package lsp-mode                                                         ; Language Server Protocol Support for Emacs 
-      :init
-        (setq lsp-keymap-prefix "C-c l")                                          ; Set prefix for lsp-command-keymap
-      :hook (typescript-mode . lsp)
-      :commands lsp)
+* Completion Configurations 
 
-    (use-package typescript-mode                                                  ; Typescript language support
-      :mode ("\\.tsx?\\'" . typescript-mode)
-      :config
-      (setq typescript-indent-level 2))
+#+BEGIN_SRC emacs-lisp
 
-    (use-package markdown-mode                                                    ; Markdown language support
-      :hook (markdown-mode . auto-fill-mode))                                     ; Automatically break lines of buffer content
+  (use-package which-key                                                        ; Display available keybindings in pop-up
+    :demand t
+    :config
+    (which-key-mode))
+
+#+END_SRC
+
+* Terminal in Emacs Configuration
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package vterm)                                                           ; Terminal emulator
+  (use-package multi-vterm)                                                     ; Launch multiple instances of vterm 
 
 #+END_SRC
 
@@ -139,45 +160,38 @@ This configuration is heavily dependent on [[https://evil.readthedocs.io/en/late
 
 #+BEGIN_SRC emacs-lisp
 
-      (global-set-key (kbd "<escape>") 'keyboard-escape-quit)                       ; Make ESC quit prompts
+  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)                       ; Make ESC quit prompts
 
-      (use-package undo-fu)                                                         ; Package for sensible redo support
-      (use-package evil                                                             ; Evil VIM key bindings
-        :demand t
-        :init
-        (setq evil-undo-system 'undo-fu)                                            ; Set evil undo to undo-fu package
-        :config                                                                     ; Initialize evil-mode
-        (evil-mode 1)                                                               ; Initiate Evil Mode on startup
-        (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)           ; Bind Emacs "quit" key to evil normal mode
-        (evil-global-set-key 'motion "j" 'evil-next-visual-line)                    ; Next line includes wrapped lines
-        (evil-global-set-key 'motion "k" 'evil-previous-visual-line)                ; Previous line includes wrapped lines
-        (evil-global-set-key 'motion "C-l" 'evil-window-right)                      ; Move to right window 
-        (evil-global-set-key 'motion "C-h" 'evil-window-left))                      ; Move to left window 
-      (use-package vterm)                                                           ; Terminal emulator
-      (use-package multi-vterm)                                                     ; Launch multiple instances of vterm 
-      (use-package general                                                          ; More convenient key definitions
-        :config
-        (general-evil-setup t)
-        (general-create-definer aa/leader-keys
-          :keymaps '(normal visual insert emacs)
-          :prefix "SPC"
-          :global-prefix "C-SPC"))
-      (use-package which-key                                                        ; Display available keybindings in pop-up
-        :demand t
-        :config
-        (which-key-mode))
+  (use-package undo-fu)                                                         ; Package for sensible redo support
+
+  (use-package evil                                                             ; Evil VIM key bindings
+    :demand t
+    :init
+    (setq evil-undo-system 'undo-fu)                                            ; Set evil undo to undo-fu package
+    :config                                                                     ; Initialize evil-mode
+    (evil-mode 1)                                                               ; Initiate Evil Mode on startup
+    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)           ; Bind Emacs "quit" key to evil normal mode
+    (evil-global-set-key 'motion "j" 'evil-next-visual-line)                    ; Next line includes wrapped lines
+    (evil-global-set-key 'motion "k" 'evil-previous-visual-line)                ; Previous line includes wrapped lines
+    (evil-global-set-key 'motion "C-l" 'evil-window-right)                      ; Move to right window 
+    (evil-global-set-key 'motion "C-h" 'evil-window-left))                      ; Move to left window 
+
+  (use-package general                                                          ; More convenient key definitions
+    :config
+    (general-evil-setup t)
+    (general-create-definer aa/leader-keys
+      :keymaps '(normal visual insert emacs)
+      :prefix "SPC"
+      :global-prefix "C-SPC"))
 
 
 #+END_SRC
 
 
 * Todos
-  - Make tree-sitter work
   - Make vterm work with evil mode
   - Better window management (full screen zoom)
   - Make clipboard compatible with MacOS clipboard
-  - Stop flashing white line at top of screen
   - Jump cursor to end of line/beginning of line
   - Straight package manager
-  - GLSL syntax highlighting major mode
   - Install Magit package
