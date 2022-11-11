@@ -57,7 +57,6 @@
 
 (evil-global-set-key 'motion "j" 'evil-next-visual-line)                    ; Next line includes wrapped lines
 (evil-global-set-key 'motion "k" 'evil-previous-visual-line)                ; Previous line includes wrapped lines
-(define-key evil-insert-state-map (kbd "jk") 'evil-normal-state)            ; Exit evil-insert-mode with 'jk' key press
 (define-key evil-normal-state-map (kbd "<left>") 'evil-prev-buffer)         ; Navigate to previous buffer on arrow-left key press 
 (define-key evil-normal-state-map (kbd "<right>") 'evil-next-buffer)        ; Navigate to next buffer on arrow-right key press 
 (define-key evil-normal-state-map (kbd "L") 'evil-end-of-line)              ; Jump to end of line 
@@ -72,19 +71,3 @@
 ;; Magit Package
 (straight-use-package 'magit)                                               ; Text-based user interface to Git
 
-
-
-;; TODO: LIST
-;; - Undo-fu configuration
-;; - Tree-sitter
-;; - Language server 
-
-
-;; TODO: Make Split and Switch window work correctly
-;; (defun split-and-switch-vert ()
-;;   "Run `evil-window-vsplit' and `evil-window-right' in sequence."
-;;   (interactive)
-;;   (evil-window-vsplit)
-;;   (evil-window-right))
-
-;; (evil-global-set-key 'motion "C-w v" 'split-and-switch-vert)                ; Vertically split and switch to newly formed window 
