@@ -55,15 +55,13 @@
 (straight-use-package 'undo-fu)                                             ; Simple, linear undo with redo for Emacs
 (setq evil-undo-system 'undo-fu)                                            ; Set evil undo to undo-fu package
 
-(define-key evil-insert-state-map (kbd "jk") 'evil-normal-state)            ; Exit evil-insert-mode with 'jk' key press
-(define-key evil-normal-state-map (kbd "<left>") 'evil-prev-buffer)         ; Navigate to last buffer on arrow-left key press 
-(define-key evil-normal-state-map (kbd "<right>") 'evil-next-buffer)        ; Navigate to next buffer on arrow-right key press 
 (evil-global-set-key 'motion "j" 'evil-next-visual-line)                    ; Next line includes wrapped lines
 (evil-global-set-key 'motion "k" 'evil-previous-visual-line)                ; Previous line includes wrapped lines
-(evil-global-set-key 'normal (kbd "C-l") 'evil-window-right)                ; Move to right window
-(evil-global-set-key 'normal (kbd "C-h") 'evil-window-left)                 ; Move to right window
-(define-key evil-normal-state-map (kbd "L") 'evil-end-of-line)              ; Navigate to last buffer on arrow-left key press 
-(define-key evil-normal-state-map (kbd "H") 'evil-beginning-of-line)        ; Navigate to next buffer on arrow-right key press 
+(define-key evil-insert-state-map (kbd "jk") 'evil-normal-state)            ; Exit evil-insert-mode with 'jk' key press
+(define-key evil-normal-state-map (kbd "<left>") 'evil-prev-buffer)         ; Navigate to previous buffer on arrow-left key press 
+(define-key evil-normal-state-map (kbd "<right>") 'evil-next-buffer)        ; Navigate to next buffer on arrow-right key press 
+(define-key evil-normal-state-map (kbd "L") 'evil-end-of-line)              ; Jump to end of line 
+(define-key evil-normal-state-map (kbd "H") 'evil-beginning-of-line)        ; Jump to beginning of line 
 
 
 ;; Which-key Package
@@ -73,3 +71,20 @@
 
 ;; Magit Package
 (straight-use-package 'magit)                                               ; Text-based user interface to Git
+
+
+
+;; TODO: LIST
+;; - Undo-fu configuration
+;; - Tree-sitter
+;; - Language server 
+
+
+;; TODO: Make Split and Switch window work correctly
+;; (defun split-and-switch-vert ()
+;;   "Run `evil-window-vsplit' and `evil-window-right' in sequence."
+;;   (interactive)
+;;   (evil-window-vsplit)
+;;   (evil-window-right))
+
+;; (evil-global-set-key 'motion "C-w v" 'split-and-switch-vert)                ; Vertically split and switch to newly formed window 
