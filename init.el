@@ -6,8 +6,15 @@
 ;; URL: https://github.com/xander-adkins/minima
 
 
+;;; Commentary:
+;; My Emacs configuration file.  Nothing too fancy, but an attempt to simplify my life, and provide better evil customisation than the heavy hitters Doom and Spacemacs
 
 
+
+
+
+;; ---------------
+;; SYSTEM SETTINGS
 
 ;; Use utf-8 everywhere
 (prefer-coding-system 'utf-8)
@@ -44,6 +51,9 @@
 
 
 
+;; -------
+;; VISUALS
+
 ;; Disable Default Emacs UI Elements
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
@@ -62,13 +72,22 @@
 ;; Load custom theme
 (load-theme 'modus-vivendi)
 
+;; Default to full screen on startup
+(when (not (eq (frame-parameter nil 'fullscreen) 'fullboth))
+    (toggle-frame-fullscreen))
+
 ;; Show stray whitespace.
 (setq-default show-trailing-whitespace t)
 
+;; Auto-Complete paired delimeters
+(electric-pair-mode 1)
 
 
 
 
+
+;; ------------------
+;; PACKAGE MANAGEMENT
 
 ;; Bootstrap Straight.el
 (defvar bootstrap-version)
@@ -95,6 +114,9 @@
 
 
 
+;; ---------
+;; EVIL MODE
+
 ;; Evil VIM key bindings
 (use-package evil
   :init
@@ -110,29 +132,108 @@
   :config
   (evil-collection-init))
 
+;; Evil escape
+(use-package evil-escape
+  :ensure t
+  :config
+  (evil-escape-mode)
+  (setq-default evil-escape-key-sequence "jk"))
+
 ;; Package for sensible redo support
 (use-package undo-fu)
 
-;; Next line includes wrapped lines
-(evil-global-set-key 'motion "j" 'evil-next-visual-line)
-;; Previous line includes wrapped lines
-(evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+
+
+
+;; -----------
+;; KEYBINDINGS
+
+
+
+
+
+
+;; -------
+;; WINDOWS
+
+;; Jump to new window on horizontal split
+(defun minima/split-window-below-and-move-cursor ()
+  (interactive)
+  (split-window-below)
+  (other-window 1))
+
+;; Jump to new window on vertical split
+(defun minima/split-window-right-and-move-cursor ()
+  (interactive)
+  (split-window-right)
+  (other-window 1))
+
+;; Split window vertically and move cursor right
+(define-key evil-normal-state-map (kbd "C-w v") 'minima/split-window-right-and-move-cursor)
+
+;; Split window horizontally and move cursor down
+(define-key evil-normal-state-map (kbd "C-w s") 'minima/split-window-below-and-move-cursor)
+
 ;; Move to right window
 (evil-global-set-key 'motion "C-l" 'evil-window-right)
+
 ;; Move to left window
 (evil-global-set-key 'motion "C-h" 'evil-window-left)
+
+
+
+
+
+;; ----------
+;; NAVIGATION
+
+;; Avy - Jump to things
+(use-package avy
+  :ensure t
+  :config
+  (global-set-key (kbd "S-a") 'avy-goto-char-2))
+
+;; Go back to previous mark (position) within buffer and go back (forward?).
+(defun my-pop-local-mark-ring ()
+  (interactive)
+  (set-mark-command t))
+
+(defun unpop-to-mark-command ()
+  "Unpop off mark ring. Does nothing if mark ring is empty."
+  (interactive)
+      (when mark-ring
+        (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
+        (set-marker (mark-marker) (car (last mark-ring)) (current-buffer))
+        (when (null (mark t)) (ding))
+        (setq mark-ring (nbutlast mark-ring))
+        (goto-char (marker-position (car (last mark-ring))))))
+
+(global-set-key (kbd "s-,") 'my-pop-local-mark-ring)
+(global-set-key (kbd "s-.") 'unpop-to-mark-command)
+
+;; Since =Cmd+,= and =Cmd+.= move you back in forward in the current buffer, the same keys with =Shift= move you back and forward between open buffers.
+(global-set-key (kbd "s-<") 'previous-buffer)
+(global-set-key (kbd "s->") 'next-buffer)
+
+;; Next line includes wrapped lines
+(evil-global-set-key 'motion "j" 'evil-next-visual-line)
+
+;; Previous line includes wrapped lines
+(evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
 ;; Jump to end of line
 (define-key evil-normal-state-map (kbd "L") 'evil-end-of-line)
+
 ;; Jump to beginning of line
 (define-key evil-normal-state-map (kbd "H") 'evil-beginning-of-line)
 
 
 
+;; -----------------------------
+;; SYNTAX HIGHLIGHTING & LINTING
 
-
-
-
-;; Syntax Highlighting with Tree Sitter
+;; Tree Sitter
 (use-package tree-sitter
   :ensure t
   :config
@@ -146,7 +247,9 @@
   :ensure t
   :after tree-sitter)
 
+;; Typescript
 (use-package typescript-mode
+  :ensure t
   :after tree-sitter
   :config
   ;; we choose this instead of tsx-mode so that eglot can automatically figure out language for server
@@ -160,22 +263,79 @@
   ;; use our derived mode to map both .tsx AND .ts -> typescriptreact-mode -> treesitter tsx
   (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
 
+;; GLSL Syntax Highlighting
+(use-package glsl-mode
+  :ensure t)
+
+;; Flycheck
+(use-package flycheck
+  :ensure t
+  :init(global-flycheck-mode))
+
+
+
+
+
+;; ---------------
+;; AUTO-FORMATTING
+
 ;; auto-format different source code files extremely intelligently
 ;; https://github.com/radian-software/apheleia
 (use-package apheleia
+  :ensure t
   :config
   (apheleia-global-mode +1))
 
+;; String Inflection
+(use-package string-inflection
+  :ensure t)
+
+
+
+
+;; ---------------
+;; AUTO-COMPLETION
 
 ;; Eglot for code intelligence
-(use-package eglot)
+(use-package eglot
+  :ensure t)
 
-
+;; Company
+(use-package company
+  :ensure t
+  :hook (after-init . global-company-mode)
+  :init
+  (setq tab-always-indent 'complete)
+  (setq company-minimum-prefix-length 2)
+  (setq company-idle-delay 0)
+  (setq tab-always-indent 'complete)
+  :bind (:map company-active-map
+	 ("<tab>" . company-complete-selection)))
 
 ;; Which-key Package
 (straight-use-package 'which-key)
 (which-key-mode)
 (setq which-key-idle-delay 0.3)
+
+
+
+
+
+;; ------
+;; SEARCH
+
+;; Quick access to init.el
+(defun minima/init-file ()
+  "Edit the `user-init-file', in another window."
+  (interactive)
+  (find-file user-init-file))
+
+
+
+
+
+;; ---
+;; GIT
 
 ;; Magit text based GIT interface
 (use-package magit)
@@ -184,9 +344,19 @@
 
 
 
+;; -----
+;; TODOS
 
-;; Quick access to init.el
-(defun init-file ()
-  "Edit the `user-init-file', in another window."
-  (interactive)
-  (find-file-other-window user-init-file))
+;; 1. Snipets
+;; 2. Ergonomic comments
+;; 3. Fuzzy Search
+;; 4. Fuzzy Command Completion
+;; 5. Lock windows in place
+;; 7. Typescript Linting
+
+
+
+
+
+(provide 'init)
+;;; init.el ends here
