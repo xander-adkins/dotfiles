@@ -297,6 +297,12 @@
 ;; Enter Dired
 (define-key evil-normal-state-map (kbd "SPC d") 'dired)
 
+;; Enter Buffers
+(define-key evil-normal-state-map (kbd "SPC b") 'ibuffer)
+
+;; Enter Magit
+(define-key evil-normal-state-map (kbd "SPC m") 'magit)
+
 ;; Remap 'w' to 'W' because I type this incorrectly so frequently
 (evil-ex-define-cmd "W" 'evil-write)
 
@@ -360,6 +366,7 @@
   :ensure t)
 
 
+
 ;; ---------------
 ;; AUTO-FORMATTING
 
@@ -421,7 +428,10 @@
   (which-key-mode)
   (setq which-key-idle-delay 0.3))
 
-
+;; Enable Ido Everywhere
+(setq ido-enable-flex-matching t)
+(setq ido-everywhere t)
+(ido-mode 1)
 
 
 
@@ -435,9 +445,12 @@
   (interactive)
   (find-file user-init-file))
 
-
-
-
+;; Projectile
+(use-package projectile
+  :ensure t
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :bind-keymap ("C-c p" . projectile-command-map))
 
 ;; ---
 ;; GIT
