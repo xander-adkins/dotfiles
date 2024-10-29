@@ -143,11 +143,24 @@
 ;; ===========================
 
 ;; Install and load Doom themes
+;; https://github.com/doomemacs/themes
 (use-package doom-themes
   :config
-  ;; Load Outrun Electric theme
+  ;; Challenger Deep
+  ;; (load-theme 'doom-challenger-deep t)
+  ;; (setq doom-theme 'doom-challenger-deep))
+  ;; Iosvkem
+  ;; (load-theme 'doom-Iosvkem t)
+  ;; (setq doom-theme 'doom-Iosvkem))
+  ;; Laserwave
+  ;; (load-theme 'doom-laserwave t)
+  ;; (setq doom-theme 'doom-laserwave))
+  ;; Outrun Electric
   (load-theme 'doom-outrun-electric t)
   (setq doom-theme 'doom-outrun-electric))
+;; Vibrant
+;; (load-theme 'doom-vibrant t)
+;; (setq doom-theme 'doom-vibrant))
 
 
 ;; ===========================
@@ -214,7 +227,7 @@
   ;; Define keybindings for Visual State
   (evil-define-key 'visual 'global
     ;; Comment/uncomment region
-    (kbd "C-;") 'comment-region)
+    (kbd "C-;") 'comment-or-uncomment-region)
 
   ;; Define keybindings for Motion State
   (evil-define-key 'motion 'global
@@ -333,6 +346,10 @@
   :config
   (add-hook 'markdown-mode-hook #'visual-line-mode) ; Enable visual line wrapping
   (add-hook 'markdown-mode-hook #'flyspell-mode))  ; Enable spell checking
+
+;; Simple distraction free markdown mode
+(use-package darkroom
+  :hook (markdown-mode . darkroom-mode))
 
 
 ;; ===========================
