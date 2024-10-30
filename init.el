@@ -147,17 +147,17 @@
 (use-package doom-themes
   :config
   ;; Challenger Deep
-  ;; (load-theme 'doom-challenger-deep t)
-  ;; (setq doom-theme 'doom-challenger-deep))
-  ;; Iosvkem
-  ;; (load-theme 'doom-Iosvkem t)
-  ;; (setq doom-theme 'doom-Iosvkem))
-  ;; Laserwave
-  ;; (load-theme 'doom-laserwave t)
-  ;; (setq doom-theme 'doom-laserwave))
-  ;; Outrun Electric
-  (load-theme 'doom-outrun-electric t)
-  (setq doom-theme 'doom-outrun-electric))
+  (load-theme 'doom-challenger-deep t)
+  (setq doom-theme 'doom-challenger-deep))
+;; Iosvkem
+;; (load-theme 'doom-Iosvkem t)
+;; (setq doom-theme 'doom-Iosvkem))
+;; Laserwave
+;; (load-theme 'doom-laserwave t)
+;; (setq doom-theme 'doom-laserwave))
+;; Outrun Electric
+;; (load-theme 'doom-outrun-electric t)
+;; (setq doom-theme 'doom-outrun-electric))
 ;; Vibrant
 ;; (load-theme 'doom-vibrant t)
 ;; (setq doom-theme 'doom-vibrant))
@@ -216,6 +216,7 @@
     ;; Open utilities
     (kbd "SPC d") 'my/open-dired-current-directory
     (kbd "SPC m") 'magit
+    (kbd "SPC b") 'bookmark-bmenu-list
 
     ;; Custom navigation and OS integration
     (kbd "C-u") 'my/navigate-up-directory
@@ -323,8 +324,9 @@
 (use-package apheleia
   :diminish apheleia-mode
   :config
-  (setq apheleia-debug t)                      ; Enable debugging for Apheleia
-  (apheleia-global-mode +1))                    ; Enable Apheleia globally
+  (setq apheleia-debug t)                             ; Enable debugging for Apheleia
+  (setq apheleia-formatters-respect-indent-level nil) ; Do not pass Emacs indent settings to formatters
+  (apheleia-global-mode +1))                          ; Enable Apheleia globally
 
 
 ;; ===========================
@@ -334,6 +336,16 @@
 ;; Magit: A text-based GIT interface
 (use-package magit
   :commands magit-status)                        ; Load magit when `magit-status` is called
+
+(use-package blamer
+  :defer 20
+  :custom-face
+  (blamer-face ((t :height 140
+                   :italic t
+                   :foreground "#334466")))
+  :config
+  (global-blamer-mode 1)
+  :bind ("C-c b" . global-blamer-mode))
 
 
 ;; ===========================
