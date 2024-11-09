@@ -1,78 +1,101 @@
 # ~/.zshrc - Custom Mac Terminal Configuration
 
-#################################
-# Prompt Customization
-#################################
+## Aliases ##
 
-# Set the shell prompt to display only a "$"
-PROMPT='$ '
-
-#################################
-# Aliases
-#################################
-
-# File Listing Aliases
-alias l='ls -lFh'    # List files in long format with classifications and human-readable sizes
-alias la='ls -a'     # List all files, including hidden ones
+# File Listings
+alias l='ls -lFh'                                         # Long format, human-readable sizes
+alias la='ls -a'                                          # Include hidden files
 
 # System Utilities
-alias ip='ipconfig getifaddr en0'               # Display the current IP address of the primary network interface (en0)
-alias cleanup='find . -name ".DS_Store" -type f -delete'  # Recursively remove all ".DS_Store" files from the current directory
-alias reboot='sudo shutdown -r now'             # Restart the computer immediately (requires sudo privileges)
+alias ip='ipconfig getifaddr en0'                         # Show current IP address (en0)
+alias reboot='sudo shutdown -r now'                       # Restart computer
+alias cleanup='find . -name ".DS_Store" -type f -delete'  # Remove all .DS_Store files
 
-#################################
-# Additional Configurations
-#################################
+## Options ##
 
-# Enable command auto-correction
-ENABLE_CORRECTION="true"
+setopt CORRECT                                            # Command auto-correction
+setopt EXTENDED_GLOB                                      # Enhanced globbing
+setopt NO_CASE_GLOB                                       # Case-insensitive globbing
+setopt AUTO_CD                                            # Auto `cd` into directories
 
-# Enable extended globbing for more powerful pattern matching
-setopt EXTENDED_GLOB
+## History ##
 
-# Improve command history behavior
-HIST_IGNORE_ALL_DUPS="true"      # Remove duplicate entries from history
-HIST_STAMPS="yyyy-mm-dd"         # Timestamp format for history entries
+export ZSH=$HOME/.zsh                                     # Set zsh home directory
+export HISTFILE=$ZSH/.zsh_history                         # Set history file path
+export HISTSIZE=10000                                     # Number of commands to load into memory
+export SAVEHIST=10000                                     # Number of commands to save to file
 
-# Enable case-insensitive completion
+setopt HIST_IGNORE_ALL_DUPS                               # Remove duplicate history entries
+setopt HIST_FIND_NO_DUPS                                  # No duplicates in history search
+HIST_STAMPS="yyyy-mm-dd"                                  # History timestamp format
+
+# Case-insensitive completion
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 
-# Optional: Ignore case when performing completion
-setopt NO_CASE_GLOB
+## Theme ##
 
-#################################
-# Key Bindings
-#################################
+# Pure theme
+fpath+=($ZSH/themes/pure)
+autoload -U promptinit; promptinit
+prompt pure
 
-# Bind Ctrl + L to clear the terminal screen
+## Plugins ##
+
+plugins=(
+  1password
+  aws
+  docker-compose
+  npm
+  nvm
+  podman
+  yarn
+  zsh-autosuggestions
+)
+for plugin ($plugins); do
+  source $ZSH/plugins/$plugin/$plugin.plugin.zsh
+done
+
+## Key Bindings ##
+
+# Ctrl + L to clear screen
 bindkey '^L' clear
 
-#################################
-# NVM Config
-#################################
+## Custom Functions ##
+
+# Function to execute after any directory change
+chpwd() {
+  ls -la  # List all files, including hidden ones, in long format
+}
+
+# Optional: Enable colored output for ls for better readability
+alias ls='ls --color=auto'
+
+## NVM Config ##
 
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                    # Load nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # Load nvm bash_completion
 
-# Automatically switch node versions based on .nvmrc
+# Auto switch Node versions based on .nvmrc
 autoload -U add-zsh-hook
 load-nvmrc() {
   command -v nvm >/dev/null 2>&1 || return
 
-  local node_version="$(nvm version)"
   local nvmrc_path="$(nvm_find_nvmrc)"
-
   if [ -n "$nvmrc_path" ]; then
     local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
-
-    if [ "$nvmrc_node_version" != "$node_version" ]; then
+    if [ "$nvmrc_node_version" != "$(nvm version)" ]; then
       nvm use
     fi
-  elif [ "$node_version" != "$(nvm version default)" ]; then
+  elif [ "$(nvm version)" != "$(nvm version default)" ]; then
     echo "Reverting to nvm default version"
     nvm use default
   fi
 }
 add-zsh-hook chpwd load-nvmrc
 load-nvmrc
+
+## Docker/Podman ##
+
+# Use Docker CLI with Podman
+export DOCKER_HOST='unix:///var/folders/87/21sv93yn4mg1yj0tv6st55rc0000gn/T/podman/podman-machine-default-api.sock'
