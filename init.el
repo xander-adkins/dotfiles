@@ -300,10 +300,11 @@
   :mode ("\\.ts\\'" . typescript-mode)
   :mode ("\\.tsx\\'" . typescript-tsx-mode)
   :config
-  ;; Derive typescript-tsx-mode from typescript-mode
-  (define-derived-mode typescript-tsx-mode typescript-mode
-    "TypeScript TSX"
-    "A TypeScript mode for TSX files.")
+  ;; Define typescript-tsx-mode only if it hasn't been defined
+  (unless (fboundp 'typescript-tsx-mode)
+    (define-derived-mode typescript-tsx-mode typescript-mode
+      "TypeScript TSX"
+      "A TypeScript mode for TSX files."))
 
   ;; Associate .ts and .tsx files with appropriate modes
   (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
@@ -342,9 +343,9 @@
   :custom-face
   (blamer-face ((t :height 140
                    :italic t
-                   :foreground "#334466")))
+                   :foreground "#ff5458")))
   :config
-  (global-blamer-mode 1)
+  (global-blamer-mode 0)
   :bind ("C-c b" . global-blamer-mode))
 
 
