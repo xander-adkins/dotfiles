@@ -2,6 +2,9 @@
 
 ## Aliases ##
 
+# Configurations quick access
+alias dotfiles='~/Workspace/dotfiles/scripts/dotfiles.sh'
+
 # File Listings
 alias l='ls -lFh'                                         # Long format, human-readable sizes
 alias la='ls -a'                                          # Include hidden files
@@ -51,6 +54,7 @@ plugins=(
   yarn
   zsh-autosuggestions
 )
+autoload -Uz compinit && compinit
 for plugin ($plugins); do
   source $ZSH/plugins/$plugin/$plugin.plugin.zsh
 done
@@ -62,9 +66,39 @@ bindkey '^L' clear
 
 ## Custom Functions ##
 
+toggle_desktop_icons() {
+  # try to read the current setting; if it doesn’t exist, assume icons are shown (1)
+  local current
+  current=$(defaults read com.apple.finder CreateDesktop 2>/dev/null || echo 1)
+
+  if [[ "$current" -eq 1 ]]; then
+    defaults write com.apple.finder CreateDesktop -bool false
+    echo "Desktop icons hidden"
+  else
+    defaults write com.apple.finder CreateDesktop -bool true
+    echo "Desktop icons shown"
+  fi
+
+  # restart Finder to apply the change
+  killall Finder
+}
+
+alias tdi=toggle_desktop_icons
+
+
 # Function to execute after any directory change
 chpwd() {
   ls -la  # List all files, including hidden ones, in long format
+}
+
+# Quickly navigate to my Obsidian vault
+oo() {
+  cd ~/Documents/Notes/inbox/ && nvim .
+}
+
+# Function to create new Obsidian note in the vault
+on() {
+  ~/Documents/Notes/scripts/generate-note.sh "$@"
 }
 
 # Optional: Enable colored output for ls for better readability
@@ -99,3 +133,6 @@ load-nvmrc
 
 # Use Docker CLI with Podman
 export DOCKER_HOST='unix:///var/folders/87/21sv93yn4mg1yj0tv6st55rc0000gn/T/podman/podman-machine-default-api.sock'
+
+## FZF
+source <(fzf --zsh)
