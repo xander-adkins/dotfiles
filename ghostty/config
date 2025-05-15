@@ -1,0 +1,73 @@
+# ghostty.yaml
+
+## General Settings
+
+# Window
+fullscreen = true
+window-padding-x = 8
+window-padding-y = 8
+window-padding-balance = true
+
+quit-after-last-window-closed = true
+
+# Optional cursor settings
+cursor-style = block
+cursor-style-blink = true
+
+# Font
+font-size = 18
+font-thicken = true
+font-synthetic-style = bold,italic,bold-italic
+bold-is-bright = true
+
+font-family = "Iosevka Term"
+font-family-bold = "Iosevka Term"
+font-family-italic = "Iosevka Term Italic"
+font-family-bold-italic = "Iosevka Term Italic"
+
+# Keybindings
+keybind = ctrl+w=toggle_split_zoom
+keybind = ctrl+h=goto_split:left
+keybind = ctrl+l=goto_split:right
+keybind = ctrl+j=goto_split:down
+keybind = ctrl+k=goto_split:up
+
+
+## name: Tokyo Night
+## license: MIT
+## author: Folke Lemaitre
+## upstream: https://github.com/folke/tokyonight.nvim/raw/main/extras/kitty_tokyonight_night.conf
+
+
+background = #1a1b26
+foreground = #c0caf5
+selection-background = #33467C
+selection-foreground = #c0caf5
+cursor-color =#c0caf5
+
+# Tabs
+#tab_bar_background #15161E
+
+# normal
+palette = 0=#15161E
+palette = 1=#f7768e
+palette = 2=#9ece6a
+palette = 3=#e0af68
+palette = 4=#7aa2f7
+palette = 5=#bb9af7
+palette = 6=#7dcfff
+palette = 7=#a9b1d6
+
+# bright
+palette = 8=#414868
+palette = 9=#f7768e
+palette = 10=#9ece6a
+palette = 11=#e0af68
+palette = 12=#7aa2f7
+palette = 13=#bb9af7
+palette = 14=#7dcfff
+palette = 15=#c0caf5
+
+# extended colors
+palette = 16=#ff9e64
+palette = 17=#db4b4b
