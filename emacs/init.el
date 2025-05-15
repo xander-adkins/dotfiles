@@ -149,6 +149,9 @@
   ;; Challenger Deep
   (load-theme 'doom-challenger-deep t)
   (setq doom-theme 'doom-challenger-deep))
+;; Tokyo Night
+;; (load-theme 'doom-tokyo-night t)
+;; (setq doom-theme 'doom-tokyo-night))
 ;; Iosvkem
 ;; (load-theme 'doom-Iosvkem t)
 ;; (setq doom-theme 'doom-Iosvkem))
@@ -249,17 +252,13 @@
 ;; Language Server Protocol (LSP) & Autocompletion
 ;; ===========================
 
-;; Eglot for LSP support
 (use-package eglot
   :hook ((typescript-mode . eglot-ensure)
-         (typescript-tsx-mode . eglot-ensure))
-  :custom
-  (eglot-extend-to-xref t)
+         (web-mode . eglot-ensure))
   :config
-  ;; Specify the TypeScript language server for TypeScript and TSX modes
+  ;; Associate web-mode with the TypeScript language server
   (add-to-list 'eglot-server-programs
-               '((typescript-mode typescript-tsx-mode)
-                 . ("typescript-language-server" "--stdio"))))
+               '(web-mode . ("typescript-language-server" "--stdio"))))
 
 ;; Enhanced Completion with IDO and Company
 (use-package ido
@@ -285,36 +284,36 @@
 ;; Syntax Highlighting
 ;; ===========================
 
+;; Install and configure Tree-sitter
 (use-package tree-sitter
-  :ensure nil                                      ; Built-in in Emacs 29 and above
-  :hook (tree-sitter-after-on . tree-sitter-hl-mode))
+  :ensure t
+  :config
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 
 (use-package tree-sitter-langs
-  :after tree-sitter
-  :config
-  (tree-sitter-require 'typescript)
-  (tree-sitter-require 'tsx))
+  :after tree-sitter)
 
+;; Associate web-mode with the tsx language
+(add-to-list 'tree-sitter-major-mode-language-alist '(web-mode . tsx))
+
+;; Use typescript-mode for .ts files
 (use-package typescript-mode
-  :after tree-sitter
   :mode ("\\.ts\\'" . typescript-mode)
-  :mode ("\\.tsx\\'" . typescript-tsx-mode)
+  :hook (typescript-mode . eglot-ensure))
+
+;; Use web-mode for .tsx files
+(use-package web-mode
+  :mode ("\\.tsx\\'" . web-mode)
+  :hook (web-mode . eglot-ensure)
   :config
-  ;; Define typescript-tsx-mode only if it hasn't been defined
-  (unless (fboundp 'typescript-tsx-mode)
-    (define-derived-mode typescript-tsx-mode typescript-mode
-      "TypeScript TSX"
-      "A TypeScript mode for TSX files."))
+  ;; Enable JSX syntax highlighting in web-mode
+  (setq web-mode-content-types-alist '(("jsx" . "\\.tsx\\'"))))
 
-  ;; Associate .ts and .tsx files with appropriate modes
-  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
-  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-tsx-mode))
+;; Enable QML syntax highlighting
+(use-package qml-mode
+  :mode ("\\.qml\\'" . qml-mode))
 
-  ;; Map typescript-tsx-mode to the Tree-sitter TSX parser
-  (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-tsx-mode . tsx)))
-
-;; Enable Tree-sitter globally
-(global-tree-sitter-mode)
 
 
 ;; ===========================
@@ -328,6 +327,13 @@
   (setq apheleia-debug t)                             ; Enable debugging for Apheleia
   (setq apheleia-formatters-respect-indent-level nil) ; Do not pass Emacs indent settings to formatters
   (apheleia-global-mode +1))                          ; Enable Apheleia globally
+
+
+;; ===========================
+;; Search
+;; ===========================
+
+(setq grep-highlight-matches t)
 
 
 ;; ===========================
@@ -360,9 +366,14 @@
   (add-hook 'markdown-mode-hook #'visual-line-mode) ; Enable visual line wrapping
   (add-hook 'markdown-mode-hook #'flyspell-mode))  ; Enable spell checking
 
-;; Simple distraction free markdown mode
-(use-package darkroom
-  :hook (markdown-mode . darkroom-mode))
+
+;; ===========================
+;; Ollama Emacs
+;; ===========================
+
+(use-package ellama
+  :config
+  (setq ellama-auto-start t))
 
 
 ;; ===========================
